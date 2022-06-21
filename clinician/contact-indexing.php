@@ -7,21 +7,6 @@
 
   $message = " ";
 
-  if(isset($_POST['addContact']))
-  {
-    $fName = mysqli_real_escape_string($connect, $_POST['fName']);
-    $lName = mysqli_real_escape_string($connect, $_POST['lName']);
-    $age = mysqli_real_escape_string($connect, $_POST['age']);
-    $mobile = mysqli_real_escape_string($connect, $_POST['mobile']);
-
-    $addContact = "INSERT INTO contacts(first_name, last_name, age, phone)
-                   VALUES('$fName', '$lName', '$age', '$mobile')";
-    $result = $connect->query($addContact);
-    if($result > 0){
-    header('Location: contact-indexing.php');
-    }
-  }
-
   if(isset($_POST['submit']))
   {
     $registryNumber = mysqli_real_escape_string($connect, $_POST['registryNumber']);
@@ -33,6 +18,9 @@
     $gender = mysqli_real_escape_string($connect, $_POST['gender']);
     $phone = mysqli_real_escape_string($connect, $_POST['phone']);
     $occupation = mysqli_real_escape_string($connect, $_POST['occupation']);
+    $mobile = array($_POST['mobile']);
+    $mbl = implode(',', $mobile);
+    $code = rand(1111,9999);
 
     // check if the patient already exists
     $checkPatient = "SELECT * FROM patient WHERE registry_number=$registryNumber";
@@ -46,11 +34,36 @@
       $user = mysqli_insert_id($connect);
       $sql = $connect->query("INSERT INTO patient(user_id, registry_number, prev_hospt, interview_date, occupation)
                               VALUES ('$user', '$registryNumber', '$clinicName', '$interviewDate', '$occupation')");
+      $patient = mysqli_insert_id($connect);
+      $sqlX = $connect->query("INSERT INTO patient_info(patient_id, code, phone)
+                               VALUES ('$patient', '$code', '$mbl')");
       // if($sql == true){
       //   // message inayosema = Patient added successfully;
       // }
+      // if(isset($_POST['sendText'])){
+      //   $mobile = mysqli_real_escape_string($connect, $_POST['mobile']);
+      //   $code = rand(1000);
+      //   $connect->query("INSERT INTO patient_info(patient_id, code, phone)
+      //                    VALUES ('$patient', '$code', '$mobile')");
+      //   header('Location: contact-indexing.php');
+      // }
     } 
   }
+
+  // if(isset($_POST['sendText']))
+  // { 
+  //   $mobile = mysqli_real_escape_string($connect, $_POST['mobile']);
+
+  //   // $patient = mysqli_insert_id($connect);
+  //   $code = rand();
+
+  //   $addContact = "INSERT INTO patient_info(patient_id, code, phone)
+  //                  VALUES('$patient', '$code', '$mobile')";
+  //   $result = $connect->query($addContact);
+  //   if($result > 0){
+  //   header('Location: contact-indexing.php');
+  //   }
+  // }
 
 ?>
 
@@ -144,7 +157,7 @@
                           </div>
                         </div>
                       </div>
-                      <hr>
+                      <!-- <hr> -->
                       <p class="card-description" style="color:blue;">Demographic Data</p>
                       <div class="row">
                         <div class="col-md-6">
@@ -181,9 +194,10 @@
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> 
+                      <button type="submit" class="btn btn-primary mr-2" name="submit"> Submit </button>  
                       <hr>
-                      <p class="card-description" style="color:blue;">Pople you came in contact with</p>
+                      <p class="card-description text-uppercase" style="color:blue;">People you came in contact with</p>
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
@@ -194,11 +208,10 @@
                           </div>
                         </div>
                         <div class="col-md-6">
-                            <button type="submit" class="btn btn-primary mr-2" name="addContact"> Add Contact </button>
+                            <button type="submit" class="btn btn-primary mr-2" name="sendText"> Send Text </button>
                         </div>
                       </div>
-                      <hr>
-                      <button type="submit" class="btn btn-primary mr-2" name="submit"> Submit </button>
+                      <!-- <hr> -->
                     </form>
                   </div>
                 </div>
