@@ -1,29 +1,28 @@
 <?php
   session_start();
   require('../config/db.php');
+  if(!isset($_SESSION['user_id'])){
+    header("location:../");
+  }
 
   // for tb-contacts number
-  $tbContacts = "SELECT COUNT(*) AS a FROM contacts";
-  $result = pg_query($connect, $tbContacts);
-  $countContacts = pg_fetch_assoc($result)['a'];
+  $tbContacts = "SELECT COUNT(*) AS a FROM contact";
+  $result = $connect->query($tbContacts);
+  $countContacts = $result->fetch_assoc()['a'];
   // for symptomatic contacts
-  $symptomaticContacts = "SELECT COUNT(*) AS b
-                          FROM symptoms";
-  $result = pg_query($connect, $symptomaticContacts);
-  $countSymptoms = pg_fetch_assoc($result)['b'];
-
+  $symptomaticContacts = "SELECT COUNT(*) AS b FROM symptom";
+  $result = $connect->query($symptomaticContacts);
+  $countSymptoms = $result->fetch_assoc()['b'];
   // for contacts at risk
-  $riskContacts = "SELECT COUNT(*) AS c
-                   FROM risk_factor";
-  $result = pg_query($connect, $riskContacts);
-  $countRisks = pg_fetch_assoc($result)['c'];
-
-  // for traced contacts (this takes data from labtest_status column.... there is an issue here)
+  $riskContacts = "SELECT COUNT(*) AS c FROM risk_factor";
+  $result = $connect->query($riskContacts);
+  $countRisks = $result->fetch_assoc()['c'];
+  // for traced contacts 
   $tracedContacts = "SELECT COUNT(*) AS d 
-                     FROM contacts 
-                     WHERE labtest_status != 'pending'";
-  $result = pg_query($connect, $tracedContacts);
-  $countTraced = pg_fetch_assoc($result)['d'];
+                     FROM contact 
+                     WHERE status != 'pending'";
+  $result = $connect->query($tracedContacts);
+  $countTraced = $result->fetch_assoc()['d'];
 ?>
 
 <!DOCTYPE html>

@@ -1,6 +1,9 @@
 <?php
   session_start();
   require('../config/db.php');
+  if(!isset($_SESSION['user_id'])){
+    header("location:../");
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Clinicians | Report</title>
+  <title>Traced Contacts | Report</title>
   <link href="../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/css/ruang-admin.min.css" rel="stylesheet">
@@ -46,10 +49,12 @@
                     <thead class="thead-light">
                       <tr>
                         <th>No.</th>
-                        <th>First name</th>
-                        <th>Last name</th>
+                        <th>FirstName</th>
+                        <th>Middle Name</th>
+                        <th>Last Name</th>
                         <th>Gender</th>
-                        <th>Phone</th>
+                        <th>Age</th>
+                        <!-- <th>Occupation</th> -->
                         <!-- <th>Labtest result</th> -->
                         <!-- <th>Email</th> -->
                         <!-- <th>Action</th> -->
@@ -57,17 +62,22 @@
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT * FROM contacts WHERE labtest_status='negative' OR labtest_status='positive'";
-                        $result = pg_query($connect, $contacts);
+                        $contacts = "SELECT user.first_name, user.middle_name, user.last_name, user.gender, contact.age, contact.occupation
+                                     FROM  contact
+                                     INNER JOIN user
+                                     ON contact.user_id = user.user_id
+                                     WHERE status != 'pending'";
+                        $result = $connect->query($contacts);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
                           <td><?= $data['first_name']; ?></td>
+                          <td><?= $data['middle_name']; ?></td>
                           <td><?= $data['last_name']; ?></td>
                           <td><?= $data['gender']; ?></td>
-                          <td><?= $data['phone']; ?></td>
+                          <td><?= $data['age']; ?></td>
                         </tr>
                       <?php
                         $i++;

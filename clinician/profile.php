@@ -1,6 +1,9 @@
 <?php
     session_start();
     require('../config/db.php');
+    if(!isset($_SESSION['user_id'])){
+      header("location:../");
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Profile</title>
+  <title>Profile | Page</title>
   <link href="../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/css/ruang-admin.min.css" rel="stylesheet">
@@ -90,8 +93,8 @@
                   </div>
 
                   <div class="row">
-                    <div class="col-lg-3 col-md-4 label text-primary">Clinic Name</div>
-                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $_SESSION['clinicName'];?></div>
+                    <div class="col-lg-3 col-md-4 label text-primary">Phone Number</div>
+                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $_SESSION['phone'];?></div>
                   </div>
 
                   <div class="row">

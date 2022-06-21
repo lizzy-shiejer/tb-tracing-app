@@ -8,30 +8,32 @@
   // registering user once the submmit button is clicked
   if(isset($_POST['submit'])){
     // removing special charaters from the input for sql query
-    $firstName = pg_escape_string($connect, $_POST['firstname']);
-    $lastName = pg_escape_string($connect, $_POST['lastname']);
-    $gender = pg_escape_string($connect, $_POST['gender']);
-    $email = pg_escape_string($connect, $_POST['email']);
-    $clinicName = pg_escape_string($connect, $_POST['clinicName']);
-    $password = pg_escape_string($connect, $_POST['password']);
+    $firstName = mysqli_real_escape_string($connect, $_POST['firstname']);
+    $middleName = mysqli_real_escape_string($connect, $_POST['middlename']);
+    $lastName = mysqli_real_escape_string($connect, $_POST['lastname']);
+    $gender = mysqli_real_escape_string($connect, $_POST['gender']);
+    $email = mysqli_real_escape_string($connect, $_POST['email']);
+    // $clinicName = mysqli_real_escape_string($connect, $_POST['clinicName']);
+    $password = mysqli_real_escape_string($connect, $_POST['password']);
     $password_encrypt = sha1($password);
 
     // validating email if it already exist before inserting into the database
-      $check_email = "SELECT * FROM users WHERE email='$email'";
-      $result = pg_query($connect, $check_email);
-      if(pg_num_rows($result) > 0){
+      $check_email = "SELECT * FROM user WHERE email='$email'";
+      $result = $connect->query($check_email);
+      if($result->num_rows > 0){
         $message = "This email already exists.".$level = 2; //this message is now not showing
       }else{
-        $sql_query = "INSERT INTO users(first_name, last_name, gender, email, clinic_name, password)
-                      VALUES('$firstName', '$lastName', '$gender', '$email', '$clinicName', '$password_encrypt')";
-        $result = pg_query($connect, $sql_query);
+        $sql_query = "INSERT INTO user(role_id, first_name, middle_name, last_name, gender, email, password)
+                      VALUES(2, '$firstName', '$middleName', '$lastName', '$gender', '$email', '$password_encrypt')";
+        $result = $connect->query($sql_query);
 
-        if(!pg_last_error($connect)){
-          $level = 1;
-          header("Refresh:3; url=./index.php");
+        if(!$connect->connect_error){
+          $message = "You're registered successfully !"; $level = 1;
+          header("Refresh:.5; url=./index.php");
         }else{
-          $level = 2;
-          echo 'There is an error'.pg_last_error($connect);
+          $message = "There is an error"; $level = 2;
+          // echo 'There is an error'.pg_last_error($connect);
+          $connect->connect_error;
         }
       }
   }
@@ -73,6 +75,9 @@
                   <input type="text" class="form-control form-control-lg" name="firstname" placeholder="First Name" required>
                 </div>
                 <div class="form-group">
+                  <input type="text" class="form-control form-control-lg" name="middlename" placeholder="Middle Name" required>
+                </div>
+                <div class="form-group">
                   <input type="text" class="form-control form-control-lg" name="lastname" placeholder="Last Name" required>
                 </div>
                 <div class="form-group">
@@ -86,14 +91,8 @@
                   <input type="email" class="form-control form-control-lg" name="email" placeholder="Email" required>
                 </div>
                 <div class="form-group">
-                  <input type="mobile" class="form-control form-control-lg" name="clinicName" placeholder="Clinic Name" required>
-                </div>
-                <div class="form-group">
                   <input type="password" class="form-control form-control-lg" name="password" placeholder="Password" required>
                 </div>
-                <!-- <div class="form-group">
-                  <input type="password" class="form-control form-control-lg" name="confirmPassword" placeholder="Confirm Password" required>
-                </div> -->
                 <div class="mt-3">
                   <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" name="submit">SIGN UP</button>
                 </div>

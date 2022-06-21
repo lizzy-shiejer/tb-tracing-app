@@ -28,7 +28,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Labtest | Status</title>
+    <title>Lab Status | Page</title>
     <link rel="stylesheet" href="../assets/clinician/assets/vendors/mdi/css/materialdesignicons.min.css" />
     <link rel="stylesheet" href="../assets/clinician/assets/vendors/flag-icon-css/css/flag-icon.min.css" />
     <link rel="stylesheet" href="../assets/clinician/assets/vendors/css/vendor.bundle.base.css" />

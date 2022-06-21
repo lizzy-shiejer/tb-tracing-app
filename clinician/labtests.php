@@ -1,6 +1,18 @@
 <?php
   session_start();
   require('../config/db.php');
+  if(!isset($_SESSION['user_id'])){
+    header("location:../");
+  }
+
+if(isset($_POST['negative'])){
+  $sql = $connect->query("UPDATE contact SET status = 'negative' WHERE contact_id = '".$_POST['id']."'");
+}
+
+if(isset($_POST['positive'])){
+  $sql = $connect->query("UPDATE contact SET status = 'positive' WHERE contact_id = '".$_POST['id']."'");
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +23,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Contacts | Report</title>
+  <title>Lab Status | Page</title>
   <link href="../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/css/ruang-admin.min.css" rel="stylesheet">
@@ -37,7 +49,7 @@
               <!-- Simple Tables -->
               <div class="card">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary text-uppercase">contacts</h6>
+                  <h6 class="m-0 font-weight-bold text-primary text-uppercase">contact</h6>
                 </div>
                 <div class="table-responsive">
                   <table class="table align-items-center table-flush">
@@ -45,43 +57,55 @@
                       <tr>
                         <th>No.</th>
                         <th>First Name</th>
+                        <th>Middle Name</th>
                         <th>Last Name</th>
                         <th>Gender</th>
-                        <th>Phone</th>
+                        <th>Age</th>
                         <th>Labtest Status</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $labtestResult = "SELECT contacts.contact_id as id, contacts.first_name, contacts.last_name, contacts.gender, contacts.phone, contacts.labtest_status   
-                                          FROM symptoms
-                                          INNER JOIN contacts 
-                                          ON symptoms.contact_id=contacts.contact_id
-                                          WHERE labtest_status = 'pending'";
-                        $result = pg_query($connect,  $labtestResult);
-                        if(pg_num_rows($result) == 0){
-                          echo "<tr><td>No Contacts!</td></tr>";
+                        $labtestResult = "SELECT contact_id as id, user.first_name, user.middle_name, user.last_name, user.gender, age, contact.status   
+                                          FROM user
+                                          INNER JOIN contact 
+                                          ON user.user_id=contact.user_id
+                                          WHERE status = 'pending'";
+                        $result = $connect->query($labtestResult);
+                        if($result->num_rows == 0){
+                          echo "<tr><td>No contact!</td></tr>";
                         }
                         else{
                           $i = 1;
-                          while($data = pg_fetch_array($result)){
+                          while($data = $result->fetch_assoc()){
                       ?>
                           <tr>
                             <td><?= $i; ?></td>
                             <td><?= $data['first_name']; ?></td>
+                            <td><?= $data['middle_name']; ?></td>
                             <td><?= $data['last_name']; ?></td>
                             <td><?= $data['gender']; ?></td>
-                            <td><?= $data['phone']; ?></td>
-                            <td><span class="badge badge-info"><?= $data['labtest_status']; ?></span></td>
+                            <td><?= $data['age']; ?></td>
+                            <td><span class="badge badge-info"><?= $data['status']; ?></span></td>
                             
-                              <form action="crud-form.php" method="post">
+                              <form action="" method="post">
                               <td>
-                                <input type="text" name="id" value="<?php echo $data['id'];?>" hidden>
-                                <button class="btn btn-sm btn-primary" name="edit" type="submit">Edit</button>
+                                <input type="text" name="id" value="<?php echo $data['id'] ;?>" hidden>
+                               <?php
+                                  if($data['status'] == 'Pending'){
+                                    ?>
+                                    <button type="submit" name="positive" class="btn btn-primary border-0 btn-sm">positive</button>
+                                    <button type="submit" name="negative" class="btn btn-danger border-0 btn-sm">negative</button>
+                                    <?php
+                                  }else{
+                                    ?>
+                                    <i class="fa fa-check text-center text-primary"></i>
+                                    <?php
+                                  }
+                               ?>
                             </td>
-                              </form>
-                                
+                              </form>                                
                           </tr>
                       <?php
                         $i++;

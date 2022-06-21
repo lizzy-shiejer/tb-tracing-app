@@ -1,6 +1,9 @@
 <?php
   session_start();
   require('../config/db.php');
+  if(!isset($_SESSION['user_id'])){
+    header("location:../");
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +29,7 @@
     <div id="content-wrapper" class="d-flex flex-column">
       <div id="content">
         <!-- TopBar -->
-          <?php include('layouts/header.php');?>
+        <?php include('layouts/header.php');?>
         <!-- Topbar -->
         <!-- Container Fluid-->
         <div class="container-fluid" id="container-wrapper">
@@ -46,9 +49,9 @@
                     <thead class="thead-light">
                       <tr>
                         <th>No.</th>
-                        <th>First name</th>
-                        <th>Last name</th>
-                        <th>Gender</th>
+                        <th>Contact name</th>
+                        <th>Patient name</th>
+                        <th></th>
                         <th>Phone</th>
                         <th>Action</th>
                       </tr>
@@ -56,9 +59,9 @@
                     <tbody>
                       <?php
                         $contacts = "SELECT * FROM contacts";
-                        $result = pg_query($connect, $contacts);
+                        $result = $connect->query($contacts);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>

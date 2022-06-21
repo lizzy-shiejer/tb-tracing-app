@@ -1,6 +1,9 @@
 <?php
   session_start();
   require('../config/db.php');
+  if(!isset($_SESSION['user_id'])){
+    header("location:../");
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Clinicians | Report</title>
+  <title>Contacts at risk | Report</title>
   <link href="../assets/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <link href="../assets/admin/css/ruang-admin.min.css" rel="stylesheet">
@@ -45,11 +48,11 @@
                   <table class="table align-items-center table-flush table-hover" id="dataTableHover">
                     <thead class="thead-light">
                       <tr>
-                        <th>No.</th>
-                        <th>First name</th>
-                        <th>Last name</th>
+                      <th>No.</th>
+                        <th>Name</th>
                         <th>Gender</th>
-                        <th>Phone</th>
+                        <th>Age</th>
+                        <th>Occupation</th>
                         <!-- <th>Labtest result</th> -->
                         <!-- <th>Email</th> -->
                         <!-- <th>Action</th> -->

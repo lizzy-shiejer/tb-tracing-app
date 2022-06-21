@@ -1,70 +1,54 @@
 <?php
   session_start();
   require('../config/db.php');
+  if(!isset($_SESSION['user_id'])){
+    header("location:../");
+  }
 
   $message = " ";
 
-  // adding a contact into the database ad sed them text messages
   if(isset($_POST['addContact']))
   {
-    // removing special charaters from the input for sql query
-    $fName = pg_escape_string($connect, $_POST['fName']);
-    $lName = pg_escape_string($connect, $_POST['lName']);
-    $age = pg_escape_string($connect, $_POST['age']);
-    $mobile = pg_escape_string($connect, $_POST['mobile']);
+    $fName = mysqli_real_escape_string($connect, $_POST['fName']);
+    $lName = mysqli_real_escape_string($connect, $_POST['lName']);
+    $age = mysqli_real_escape_string($connect, $_POST['age']);
+    $mobile = mysqli_real_escape_string($connect, $_POST['mobile']);
 
-    // checking if the contact as already been added
-
-    // inserting the data into the database 
     $addContact = "INSERT INTO contacts(first_name, last_name, age, phone)
                    VALUES('$fName', '$lName', '$age', '$mobile')";
-    $result = pg_query($connect, $addContact);
+    $result = $connect->query($addContact);
     if($result > 0){
     header('Location: contact-indexing.php');
     }
-
   }
 
-  // adding the patient into the database and capturing the contacts that are related to the patient
   if(isset($_POST['submit']))
   {
-    // removing special charaters from the input for sql query
-    $idNumber = pg_escape_string($connect, $_POST['idNumber']);
-    $registryNumber = pg_escape_string($connect, $_POST['registryNumber']);
-    $firstName = pg_escape_string($connect, $_POST['firstName']);
-    $lastName = pg_escape_string($connect, $_POST['lastName']);
-    $clinicName = pg_escape_string($connect, $_POST['clinicName']);
-    $interviewDate = pg_escape_string($connect, $_POST['interviewDate']);
-    $birthDate = pg_escape_string($connect, $_POST['birthDate']);
-    $gender = pg_escape_string($connect, $_POST['gender']);
-    $district = pg_escape_string($connect, $_POST['district']);
-    $region = pg_escape_string($connect, $_POST['region']);
-    $phone = pg_escape_string($connect, $_POST['phone']);
-    $occupation = pg_escape_string($connect, $_POST['occupation']);
-
-    // function for accessing the foreign key
-    function fetchClinicianId()
-    {
-      global $connect;
-      $sql = pg_query($connect, "SELECT user_id as id FROM users WHERE user_id = '".$_SESSION['user_id']."' ");
-      $clinicianId = pg_fetch_assoc($sql)['id'];
-      return $clinicianId;
-    }
+    $registryNumber = mysqli_real_escape_string($connect, $_POST['registryNumber']);
+    $firstName = mysqli_real_escape_string($connect, $_POST['firstName']);
+    $middleName = mysqli_real_escape_string($connect, $_POST['middleName']);
+    $lastName = mysqli_real_escape_string($connect, $_POST['lastName']);
+    $clinicName = mysqli_real_escape_string($connect, $_POST['clinicName']);
+    $interviewDate = mysqli_real_escape_string($connect, $_POST['interviewDate']);
+    $gender = mysqli_real_escape_string($connect, $_POST['gender']);
+    $phone = mysqli_real_escape_string($connect, $_POST['phone']);
+    $occupation = mysqli_real_escape_string($connect, $_POST['occupation']);
 
     // check if the patient already exists
-    $checkPatient = "SELECT * FROM patients WHERE registry_number=$registryNumber AND id_number=$idNumber";
-    $result = pg_query($connect, $checkPatient);
-    if(pg_num_rows($result) > 0){
+    $checkPatient = "SELECT * FROM patient WHERE registry_number=$registryNumber";
+    $result = $connect->query($checkPatient);
+    if($result->num_rows > 0){
       $massage = "Patient already exists.";
     }
-    else{
-      // inserting the data into the database
-      $submitPatient = "INSERT INTO patients(user_id,first_name, last_name, gender, date_of_birth, id_number, registry_number, clinic_name, interview_date, phone, district, region, occupation)
-      VALUES('".fetchClinicianId()."','$firstName', '$lastName', '$gender', '$birthDate', '$idNumber', '$registryNumber', '$clinicName', '$interviewDate', '$phone', '$district', '$region', '$occupation')";
-      $result = pg_query($connect, $submitPatient);
-      if($result > 0){
-      header('Location: contact-indexing.php');
-      }
+    else {
+      $connect->query("INSERT user(role_id, first_name, middle_name, last_name, gender, phone)
+                               VALUES (3, '$firstName', '$middleName', '$lastName', '$gender', '$phone')");
+      $user = mysqli_insert_id($connect);
+      $sql = $connect->query("INSERT INTO patient(user_id, registry_number, prev_hospt, interview_date, occupation)
+                              VALUES ('$user', '$registryNumber', '$clinicName', '$interviewDate', '$occupation')");
+      // if($sql == true){
+      //   // message inayosema = Patient added successfully;
+      // }
     } 
   }
 
@@ -76,7 +60,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Contact-indexing | TB-patient</title>
+    <title>Contact-indexing | Page</title>
     <link rel="stylesheet" href="../assets/clinician/assets/vendors/mdi/css/materialdesignicons.min.css" />
     <link rel="stylesheet" href="../assets/clinician/assets/vendors/flag-icon-css/css/flag-icon.min.css" />
     <link rel="stylesheet" href="../assets/clinician/assets/vendors/css/vendor.bundle.base.css" />
@@ -105,33 +89,13 @@
             <div class="d-sm-flex align-items-center justify-content-between mb-4">
               <h1 class="h3 mb-0 text-gray-800">CONTACT INDEXING</h1>
             </div> 
-             <!--alert  message  -->
-             <!-- <div class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button> -->
-                    <!-- there is an issue hee that need to be solved -->
-                    <!-- shija yooo -->
-                    <!-- i want to diplay an alert message here -->
-              <!-- </div> -->
-             <!--alert  message  -->
-                  
-            <!-- form that captue tb-patiennt details -->
             <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
                     <form class="form-sample" method="POST">
                       <p class="card-description" style="color:blue;">TB Indexing</p>
                       <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">ID Number</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" name="idNumber" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
+                      <div class="col-md-6">
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Registry Number</label>
                             <div class="col-sm-9">
@@ -139,13 +103,21 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">First Name</label>
                             <div class="col-sm-9">
                               <input type="text" class="form-control" name="firstName" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                      <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Middle Name</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" name="middleName" />
                             </div>
                           </div>
                         </div>
@@ -161,34 +133,6 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Interview Date</label>
-                            <div class="col-sm-9">
-                              <input type="date" class="form-control" name="interviewDate" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Clinic Name</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" name="clinicName" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <hr>
-                      <p class="card-description" style="color:blue;">Demographic Data</p>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Date of Birth</label>
-                            <div class="col-sm-9">
-                              <input type="date" class="form-control" name="birthDate" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Gender</label>
                             <div class="col-sm-9">
                               <select class="form-control" name="gender">
@@ -200,26 +144,22 @@
                           </div>
                         </div>
                       </div>
+                      <hr>
+                      <p class="card-description" style="color:blue;">Demographic Data</p>
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">District</label>
+                            <label class="col-sm-3 col-form-label">Interview Date</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control" name="district" />
+                              <input type="date" class="form-control" name="interviewDate" />
                             </div>
                           </div>
                         </div>
                         <div class="col-md-6">
                           <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Region</label>
+                            <label class="col-sm-3 col-form-label">Clinic Name</label>
                             <div class="col-sm-9">
-                              <select class="form-control" name="region">
-                              <option></option>
-                              <option name="region">Arusha</option>
-                              <option name="region">Mwanza</option>
-                              <option name="region">Dodoma</option>
-                              <option name="region">Dar es salaam</option>
-                              </select>
+                              <input type="text" class="form-control" name="clinicName" />
                             </div>
                           </div>
                         </div>
@@ -243,34 +183,8 @@
                         </div>
                       </div>
                       <hr>
-                      <p class="card-description" style="color:blue;">Household Contact</p>
+                      <p class="card-description" style="color:blue;">Pople you came in contact with</p>
                       <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">First Name</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" name="fName" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Last Name</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" name="lName" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Age</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" name="age" />
-                            </div>
-                          </div>
-                        </div>
                         <div class="col-md-6">
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Mobile Number</label>
