@@ -150,8 +150,8 @@
             $sqlX = pg_query($connect, "SELECT contact.status 
                                         FROM patient_info
                                         INNER JOIN contact
-                                         ON contact.info_id = patient_info.info_id
-                                         WHERE code = '$code'");
+                                        ON contact.info_id = patient_info.info_id
+                                        WHERE code = '$code'");
             $row = pg_fetch_assoc($sqlX)['status'];
             $text = "Labtest Status:".' '.$row;
             session_ends($text);

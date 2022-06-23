@@ -8,8 +8,8 @@
     include '../config/db.php';
 
     // for service pporviders
-    // $sessionId = $_POST['sessionId'];
-    // $serviceCode = $_POST['serviceCode'];
+    $sessionId = $_POST['sessionId'];
+    $serviceCode = $_POST['serviceCode'];
     $phone = $_POST['phoneNumber'];
     $text = $_POST['text'];
 
