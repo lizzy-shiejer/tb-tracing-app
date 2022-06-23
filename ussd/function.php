@@ -12,7 +12,7 @@
     function main_menu()
     {
         $text = "Welcome to TBT(TB Tracing). Select from the menu below.\n1. Register\n2. Symptom screening\n3. Risk assesment\n4. Labtest Result";
-        session_ends($text);
+        session_proceeds($text);
     }
     
     function code($data)
