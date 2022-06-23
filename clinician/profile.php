@@ -4,6 +4,22 @@
     if(!isset($_SESSION['user_id'])){
       header("location:../");
     }
+
+    $id = $_SESSION['user_id'];
+    $sqlX = $connect->query("SELECT * FROM user WHERE user_id = '$id'");
+    $row = $sqlX->fetch_object();
+
+    if(isset($_POST['save'])){
+      $fname = $_POST['firstName'];
+      $mname = $_POST['middleName'];
+      $lname = $_POST['lastName'];
+      $gender = $_POST['gender'];
+      $email = $_POST['email'];
+
+      $connect->query("UPDATE user
+                       SET first_name= $fname, middle_name=$mname, last_name=$lname, gender=$gender, email=$email
+                       WHERE user_id=$id");
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,30 +92,35 @@
                 </li>
 
               </ul>
-              <div class="tab-content pt-2">
+              <div class="tab-content pt-4">
 
                 <div class="tab-pane fade show active profile-overview" id="profile-overview">
                   
                   <h5 class="card-title text-gray-900">Profile Details</h5>
 
                   <div class="row">
-                    <div class="col-lg-3 col-md-4 label text-primary">Full Name</div>
-                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $_SESSION['name'];?></div>
+                    <div class="col-lg-3 col-md-4 label text-primary">Fisrt Name</div>
+                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $row->first_name;?></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label text-primary">Middle Name</div>
+                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $row->middle_name;?></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label text-primary">Last Name</div>
+                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $row->last_name;?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label text-primary">Gender</div>
-                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $_SESSION['gender'];?></div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label text-primary">Phone Number</div>
-                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $_SESSION['phone'];?></div>
+                    <div class="col-lg-9 col-md-8 text-uppercase"><?php echo $row->gender;?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label text-primary">Email</div>
-                    <div class="col-lg-9 col-md-8"><?php echo $_SESSION['email'];?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $row->email;?></div>
                   </div>
 
                 </div>
@@ -107,37 +128,44 @@
                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                   <!-- Profile Edit Form -->
-                  <form>
+                  <form method="POST" action="profile.php">
                     <div class="row mb-3">
-                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label text-primary">Full Name</label>
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label text-primary">First Name</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson">
+                        <input name="firstName" type="text" class="form-control" value="<?php echo $row->first_name;?>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label text-primary">Middle Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="middleName" type="text" class="form-control" value="<?php echo $row->middle_name;?>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label text-primary">Last Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="lastName" type="text" class="form-control" value="<?php echo $row->last_name;?>">
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="company" class="col-md-4 col-lg-3 col-form-label text-primary">Gender</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="company" type="text" class="form-control" id="company" value="Lueilwitz, Wisoky and Leuschke">
-                      </div>
-                    </div>
-
-                    <div class="row mb-3">
-                      <label for="Job" class="col-md-4 col-lg-3 col-form-label text-primary">Clinic Name</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="job" type="text" class="form-control" id="Job" value="Web Designer">
+                        <input name="gender" type="text" class="form-control" id="company" value="<?php echo $row->gender;?>">
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="Country" class="col-md-4 col-lg-3 col-form-label text-primary">Email</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="country" type="text" class="form-control" id="Country" value="USA">
+                        <input name="email" type="text" class="form-control" id="Country" value="<?php echo $row->email;?>">
                       </div>
                     </div>
 
                     <div class="text-center">
-                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                      <button type="submit" class="btn btn-primary" nam="save">Save Changes</button>
                     </div>
                   </form><!-- End Profile Edit Form -->
 
@@ -212,7 +240,7 @@
   <script src="../assets/profile/vendor/tinymce/tinymce.min.js"></script>
 
   <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></scrip>
+  <script src="assets/js/main.js"></script>
 
 </body>
 

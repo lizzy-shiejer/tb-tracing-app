@@ -49,19 +49,23 @@
                     <thead class="thead-light">
                       <tr>
                         <th>No.</th>
-                        <th>First name</th>
-                        <th>Last name</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
                         <th>Gender</th>
                         <th>Registry No</th>
+                        <th>Clinic Name</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $patients = "SELECT * FROM patients";
-                        $result = pg_query($connect, $patients);
+                        $patients = "SELECT  first_name, last_name, gender, registry_number, prev_hospt, occupation
+                                     FROM patient
+                                     INNER JOIN user
+                                     ON patient.user_id=user.user_id";
+                        $result = $connect->query($patients);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
@@ -69,10 +73,13 @@
                           <td><?= $data['last_name']; ?></td>
                           <td><?= $data['gender']; ?></td>
                           <td><?= $data['registry_number']; ?></td>
+                          <td><?= $data['prev_hospt']; ?></td>
+                          <form action="" method="post">
                           <td>
                                 <a href="#" class="btn btn-sm btn-primary">Update</a>
                                 <a href="#" class="btn btn-sm btn-primary">Delete</a>
-                            </td>
+                          </td>
+                          </form>
                         </tr>
                       <?php
                         $i++;

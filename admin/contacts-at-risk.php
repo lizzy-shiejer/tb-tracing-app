@@ -49,31 +49,36 @@
                     <thead class="thead-light">
                       <tr>
                       <th>No.</th>
-                        <th>Name</th>
+                        <th>First Name</th>
+                        <th>Middle Name</th>
+                        <th>Last Name</th>
                         <th>Gender</th>
                         <th>Age</th>
-                        <th>Occupation</th>
-                        <!-- <th>Labtest result</th> -->
-                        <!-- <th>Email</th> -->
-                        <!-- <th>Action</th> -->
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT contacts.first_name, contacts.last_name, contacts.gender, contacts.phone 
+                        // $contacts = "SELECT contact.*
+                        //              FROM risk_factor
+                        //              INNER JOIN contact
+                        //              ON risk_factor.contact_id=contact.contact_id";
+                        $contacts = "SELECT first_name, middle_name, last_name, gender, contact.age 
                                      FROM risk_factor
-                                     INNER JOIN contacts
-                                     ON risk_factor.contact_id=contacts.contact_id";
-                        $result = pg_query($connect, $contacts);
+                                     INNER JOIN contact
+                                     ON risk_factor.contact_id=contact.contact_id
+                                     INNER JOIN user
+                                     ON user.user_id=contact.user_id";
+                        $result = $connect->query($contacts);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
                           <td><?= $data['first_name']; ?></td>
+                          <td><?= $data['middle_name']; ?></td>
                           <td><?= $data['last_name']; ?></td>
                           <td><?= $data['gender']; ?></td>
-                          <td><?= $data['phone']; ?></td>
+                          <td><?= $data['age']; ?></td>
                         </tr>
                       <?php
                         $i++;

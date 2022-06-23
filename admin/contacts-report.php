@@ -49,30 +49,37 @@
                     <thead class="thead-light">
                       <tr>
                         <th>No.</th>
-                        <th>Contact name</th>
-                        <th>Patient name</th>
-                        <th></th>
-                        <th>Phone</th>
+                        <th>Contact Name</th>
+                        <th>Middle Name</th>
+                        <th>Last Name</th>
+                        <th>Gender</th>
+                        <th>Age</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT * FROM contacts";
+                        $contacts = "SELECT first_name fn, middle_name mn, last_name lm, gender, age
+                                     FROM contact
+                                     INNER JOIN user
+                                     ON contact.user_id=user.user_id";
                         $result = $connect->query($contacts);
                         $i = 1;
                         while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
-                          <td><?= $data['first_name']; ?></td>
-                          <td><?= $data['last_name']; ?></td>
+                          <td><?= $data['fn']; ?></td>
+                          <td><?= $data['mn']; ?></td>
+                          <td><?= $data['lm']; ?></td>
                           <td><?= $data['gender']; ?></td>
-                          <td><?= $data['phone']; ?></td>
+                          <td><?= $data['age']; ?></td>
+                          <form action="" method="post">
                           <td>
                                 <a href="#" class="btn btn-sm btn-primary">Update</a>
                                 <a href="#" class="btn btn-sm btn-primary">Delete</a>
-                            </td>
+                          </td>
+                          </form>
                         </tr>
                       <?php
                         $i++;

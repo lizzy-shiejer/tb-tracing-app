@@ -9,9 +9,8 @@
     $email = $_POST['email'];
     $password = sha1($_POST['password']);
 
-    // validate email password  to make sure the user is in the database
+    // validate email 
     $check_credentials =$connect->query("SELECT * FROM user WHERE email='$email' AND password='$password'");
-
     $rows = $check_credentials->num_rows;
     if($rows == 0){
       $message = "Invalid email or password!"; $level = 2;
@@ -19,6 +18,9 @@
     else{
       $data = $check_credentials->fetch_assoc();
       $_SESSION['user_id'] = $data['user_id'];
+      $_SESSION['firstName'] = $data['first_name'];
+      $_SESSION['middleName'] = $data['middle_name'];
+      $_SESSION['lastName'] = $data['last_name'];
       $_SESSION['name'] = $data['first_name'].' '.$data['last_name'];
       $_SESSION['email'] = $data['email'];
       $_SESSION['gender'] = $data['gender'];

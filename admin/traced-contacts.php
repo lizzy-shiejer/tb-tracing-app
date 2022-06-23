@@ -54,15 +54,11 @@
                         <th>Last Name</th>
                         <th>Gender</th>
                         <th>Age</th>
-                        <!-- <th>Occupation</th> -->
-                        <!-- <th>Labtest result</th> -->
-                        <!-- <th>Email</th> -->
-                        <!-- <th>Action</th> -->
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT user.first_name, user.middle_name, user.last_name, user.gender, contact.age, contact.occupation
+                        $contacts = "SELECT user.first_name, user.middle_name, user.last_name, user.gender, contact.age
                                      FROM  contact
                                      INNER JOIN user
                                      ON contact.user_id = user.user_id

@@ -50,28 +50,32 @@
                       <tr>
                         <th>No.</th>
                         <th>First name</th>
+                        <th>Middle name</th>
                         <th>Last name</th>
                         <th>Gender</th>
-                        <th>Phone</th>
+                        <th>Age</th>
                         <th>Labtest result</th>
-                        <!-- <th>Email</th> -->
-                        <!-- <th>Action</th> -->
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT * FROM contacts WHERE labtest_status='negative' OR labtest_status='positive'";
-                        $result = pg_query($connect, $contacts);
+                        $contacts = "SELECT first_name, middle_name, last_name, gender, age, status 
+                                     FROM contact 
+                                     INNER JOIN user 
+                                     ON contact.user_id=user.user_id
+                                     WHERE status != 'Pending'";
+                        $result = $connect->query($contacts);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
                           <td><?= $data['first_name']; ?></td>
+                          <td><?= $data['middle_name']; ?></td>
                           <td><?= $data['last_name']; ?></td>
                           <td><?= $data['gender']; ?></td>
-                          <td><?= $data['phone']; ?></td>
-                          <td><span class="badge badge-info"><?= $data['labtest_status']; ?></span></td>
+                          <td><?= $data['age']; ?></td>
+                          <td><span class="badge badge-info"><?= $data['status']; ?></span></td>
                         </tr>
                       <?php
                         $i++;

@@ -95,8 +95,8 @@ if(isset($_POST['positive'])){
                                <?php
                                   if($data['status'] == 'Pending'){
                                     ?>
-                                    <button type="submit" name="positive" class="btn btn-primary border-0 btn-sm">positive</button>
-                                    <button type="submit" name="negative" class="btn btn-danger border-0 btn-sm">negative</button>
+                                    <button type="submit" name="positive" class="btn btn-danger border-0 btn-sm">Positive</button>
+                                    <button type="submit" name="negative" class="btn btn-success border-0 btn-sm">Negative</button>
                                     <?php
                                   }else{
                                     ?>

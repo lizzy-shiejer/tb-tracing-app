@@ -13,7 +13,7 @@
     $lastName = mysqli_real_escape_string($connect, $_POST['lastname']);
     $gender = mysqli_real_escape_string($connect, $_POST['gender']);
     $email = mysqli_real_escape_string($connect, $_POST['email']);
-    // $clinicName = mysqli_real_escape_string($connect, $_POST['clinicName']);
+    $clinicName = mysqli_real_escape_string($connect, $_POST['clinicName']);
     $password = mysqli_real_escape_string($connect, $_POST['password']);
     $password_encrypt = sha1($password);
 
@@ -22,10 +22,13 @@
       $result = $connect->query($check_email);
       if($result->num_rows > 0){
         $message = "This email already exists.".$level = 2; //this message is now not showing
-      }else{
-        $sql_query = "INSERT INTO user(role_id, first_name, middle_name, last_name, gender, email, password)
-                      VALUES(2, '$firstName', '$middleName', '$lastName', '$gender', '$email', '$password_encrypt')";
-        $result = $connect->query($sql_query);
+      }
+      else{
+        $connect->query("INSERT INTO user(role_id, first_name, middle_name, last_name, gender, email, password)
+                         VALUES (2, '$firstName', '$middleName', '$lastName', '$gender', '$email', '$password_encrypt')");
+        $user = mysqli_insert_id($connect);
+        $connect->query("INSERT INTO clinician(user_id, clinic_name)
+                         VALUES ('$user', '$clinicName')");
 
         if(!$connect->connect_error){
           $message = "You're registered successfully !"; $level = 1;
@@ -70,7 +73,7 @@
                 <?php
                 }
               ?>
-              <form class="pt-3"method="POST">
+              <form class="pt-1"method="POST">
                 <div class="form-group">
                   <input type="text" class="form-control form-control-lg" name="firstname" placeholder="First Name" required>
                 </div>
@@ -89,6 +92,9 @@
                 </div>
                 <div class="form-group">
                   <input type="email" class="form-control form-control-lg" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control form-control-lg" name="clinicName" placeholder="Clinic Name" required>
                 </div>
                 <div class="form-group">
                   <input type="password" class="form-control form-control-lg" name="password" placeholder="Password" required>

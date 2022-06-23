@@ -11,7 +11,7 @@
 
     function main_menu()
     {
-        $text = "Welcome to TBT(TB Tracing). Select from the menu below.\n1. Register\n2. Symptom screening & risk assesment\n3. Labtest Result";
+        $text = "Welcome to TBT(TB Tracing). Select from the menu below.\n1. Register\n2. Symptom screening\n3. Risk assesment\n4. Labtest Result";
         session_ends($text);
     }
     
@@ -25,7 +25,7 @@
         if(count($data) == 3){
             $code = $data[2];
             $sqlX = $connect->query("SELECT * FROM patient_info WHERE code = '$code'");
-            if($sqlX->num_rows==1){
+            if($sqlX->num_rows == 1){
                $text ='Press 1 to proceed';
                session_proceeds($text);
             }
@@ -35,10 +35,6 @@
             }
         }
     }
-
-    // function to check if the user already exists.
-    // it should come here.
-    // still trying to figure it out.
 
     function register($data)
     {
@@ -89,45 +85,57 @@
     function screening($data)
     {
         global $connect;
-        if(count($data) == 2){
-            $text =  "Have you been coughing for two weeks and more?";
-            session_proceeds($text);
-        }
-        if(count($data) == 3){
-            $text = "Have you been coughing up blood or heavy mucus?";
-            session_proceeds($text);
-        }
         if(count($data) == 4){
-            $text = "Have you been experincing chest pain or pain with breathing or coughing, fever, fatigue, weight loss, or sweating?";
+            $text =  "Have you been coughing for two weeks and more?\n1. YES\n2. NO";
             session_proceeds($text);
         }
         if(count($data) == 5){
-            $text = "Have you been in contact with the person who has TB?";
+            $text = "Have you been coughing up blood or heavy mucus?\n1. YES\n2. NO";
             session_proceeds($text);
         }
         if(count($data) == 6){
-            $text = "Do you have weak immune due to HIV/AIDS, diabetes, kidney diseases, or malnutrition?";
+            $text = "Have you been experincing chest pain or pain with breathing or coughing, fever, fatigue, weight loss, or sweating?\n1. YES\n2. NO";
             session_proceeds($text);
         }
         if(count($data) == 7){
-            $text = "Have you been using unprescribed drugs, or have been in clouded areas frequently?";
-            session_proceeds($text);
-        }
-        if(count($data) == 8){
-            $coughingWeeks = $data[2];
-            $coughingBlood = $data[3];
-            $chestPain = $data[4];
-            $tbPerson = $data[5];
-            $weekImmune = $data[6];
-            $conditionStatus = $data[7];
+            $coughingWeeks = $data[4];
+            $coughingBlood = $data[5];
+            $chestPain = $data[6];
 
             $sqlX = $connect->query("SELECT contact_id FROM contact");
             $result = $sqlX->fetch_array()['contact_id'];
             $connect->query("INSERT INTO symptom(contact_id, coughing_weeks, coughing_blood, chest_pain) 
                              VALUES('$result', '$coughingWeeks', '$coughingBlood', '$chestPain')");
+            $text = "You have conducted selft screening successfully!";
+            session_ends($text);
+        }
+    }
+
+    function risk($data)
+    {
+        global $connect;
+        if(count($data) == 4){
+            $text = "Have you been in contact with the person who has TB?\n1. YES\n2. NO";
+            session_proceeds($text);
+        }
+        if(count($data) == 5){
+            $text = "Do you have weak immune due to HIV/AIDS, diabetes, kidney diseases, or malnutrition?\n1. YES\n2. NO";
+            session_proceeds($text);
+        }
+        if(count($data) == 6){
+            $text = "Have you been using unprescribed drugs, or have been in clouded areas frequently?\n1. YES\n2. NO";
+            session_proceeds($text);
+        }
+        if(count($data) == 7){
+            $tbPerson = $data[4];
+            $weekImmune = $data[5];
+            $conditionStatus = $data[6];
+
+            $sqlX = $connect->query("SELECT contact_id FROM contact");
+            $result = $sqlX->fetch_array()['contact_id'];
             $connect->query("INSERT INTO risk_factor(contact_id, sick_person, weak_immune, condition_state)
                              VALUES('$result', '$tbPerson', '$weekImmune', '$conditionStatus')");
-            $text = "You have conducted selft screening successfully!";
+            $text = "You have conducted risk assesment successfully!";
             session_ends($text);
         }
     }
@@ -136,9 +144,14 @@
     {
         global $connect;
         if(count($data) == 4){
-            $sqlX = $connect->query("SELECT status FROM contact");
-            $row = $sqlX->fetch_array['status'];
-            $text = "Labtest Status:".' '.$row['status'];
+            $code = $data[2];
+            $sqlX = $connect->query("SELECT contact.status 
+                                     FROM patient_info
+                                     INNER JOIN contact
+                                     ON contact.info_id = patient_info.info_id
+                                     WHERE code = '$code'");
+            $row = $sqlX->fetch_assoc()['status'];
+            $text = "Labtest Status:".' '.$row;
             session_ends($text);
         }
     }

@@ -50,6 +50,7 @@
                       <tr>
                         <th>No.</th>
                         <th>First name</th>
+                        <th>Middle name</th>
                         <th>Last name</th>
                         <th>Clinic name</th>
                         <th>Email</th>
@@ -58,21 +59,27 @@
                     </thead>
                     <tbody>
                       <?php
-                        $clinicians = "SELECT * FROM users WHERE user_role ='1'";
-                        $result = pg_query($connect, $clinicians);
+                        $clinicians = "SELECT first_name, middle_name, last_name, email, clinic_name 
+                                       FROM clinician
+                                       INNER JOIN user
+                                       ON clinician.user_id=user.user_id";
+                        $result = $connect->query($clinicians);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
                           <td><?= $data['first_name']; ?></td>
+                          <td><?= $data['middle_name']; ?></td>
                           <td><?= $data['last_name']; ?></td>
                           <td><?= $data['clinic_name']; ?></td>
                           <td><?= $data['email']; ?></td>
+                          <form action="" method="post">
                           <td>
                                 <a href="#" class="btn btn-sm btn-primary">Update</a>
                                 <a href="#" class="btn btn-sm btn-primary">Delete</a>
-                            </td>
+                          </td>
+                          </form>
                         </tr>
                       <?php
                         $i++;

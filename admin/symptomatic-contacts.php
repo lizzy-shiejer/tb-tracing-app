@@ -50,30 +50,31 @@
                       <tr>
                         <th>No.</th>
                         <th>First name</th>
+                        <th>Middle name</th>
                         <th>Last name</th>
                         <th>Gender</th>
-                        <th>Phone</th>
-                        <!-- <th>Labtest result</th> -->
-                        <!-- <th>Email</th> -->
-                        <!-- <th>Action</th> -->
+                        <th>Age</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT contacts.first_name, contacts.last_name, contacts.gender, contacts.phone 
-                                     FROM symptoms
-                                     INNER JOIN contacts
-                                     ON symptoms.contact_id=contacts.contact_id";
-                        $result = pg_query($connect, $contacts);
+                        $contacts = "SELECT first_name, middle_name, last_name, gender, age 
+                                     FROM symptom
+                                     INNER JOIN contact
+                                     ON symptom.contact_id=contact.contact_id
+                                     INNER JOIN user
+                                     ON contact.user_id=user.user_id";
+                        $result = $connect->query($contacts);
                         $i = 1;
-                        while($data = pg_fetch_array($result)){
+                        while($data = $result->fetch_array()){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
                           <td><?= $data['first_name']; ?></td>
+                          <td><?= $data['middle_name']; ?></td>
                           <td><?= $data['last_name']; ?></td>
                           <td><?= $data['gender']; ?></td>
-                          <td><?= $data['phone']; ?></td>
+                          <td><?= $data['age']; ?></td>
                         </tr>
                       <?php
                         $i++;

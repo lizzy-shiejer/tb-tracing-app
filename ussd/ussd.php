@@ -30,12 +30,18 @@
                 break;
             
             case 2:
+                code($data);
                 screening($data);
                 break;
 
             case 3:
                 code($data);
-                labresult($data, $phone);
+                risk($data);
+                break;
+
+            case 4:
+                code($data);
+                labresult($data);
                 break;
 
             default:
