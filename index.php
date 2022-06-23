@@ -10,13 +10,13 @@
     $password = sha1($_POST['password']);
 
     // validate email 
-    $check_credentials =$connect->query("SELECT * FROM user WHERE email='$email' AND password='$password'");
-    $rows = $check_credentials->num_rows;
+    $result = pg_query($connect, "SELECT * FROM users WHERE email='$email' AND password='$password'");
+    $rows = pg_num_rows($result);
     if($rows == 0){
       $message = "Invalid email or password!"; $level = 2;
     }
     else{
-      $data = $check_credentials->fetch_assoc();
+      $data = pg_fetch_assoc($result);
       $_SESSION['user_id'] = $data['user_id'];
       $_SESSION['firstName'] = $data['first_name'];
       $_SESSION['middleName'] = $data['middle_name'];
@@ -29,9 +29,9 @@
       $id = $data['role_id'];
 
       if($id == 2) {
-        $select_user = "SELECT * FROM user";
-        $result = $connect->query($select_user);
-        $rows = $result->num_rows;
+        $select_user = "SELECT * FROM users";
+        $result = pg_query($connect, $select_user);
+        $rows = pg_num_rows($result);
         if($rows > 0){
           header('Location: clinician/');
         }

@@ -7,36 +7,37 @@
 
   // registering user once the submmit button is clicked
   if(isset($_POST['submit'])){
-    // removing special charaters from the input for sql query
-    $firstName = mysqli_real_escape_string($connect, $_POST['firstname']);
-    $middleName = mysqli_real_escape_string($connect, $_POST['middlename']);
-    $lastName = mysqli_real_escape_string($connect, $_POST['lastname']);
-    $gender = mysqli_real_escape_string($connect, $_POST['gender']);
-    $email = mysqli_real_escape_string($connect, $_POST['email']);
-    $clinicName = mysqli_real_escape_string($connect, $_POST['clinicName']);
-    $password = mysqli_real_escape_string($connect, $_POST['password']);
+    // removing special charaters from the input for sql pg_query
+    $firstName = pg_escape_string($connect, $_POST['firstname']);
+    $middleName = pg_escape_string($connect, $_POST['middlename']);
+    $lastName = pg_escape_string($connect, $_POST['lastname']);
+    $gender = pg_escape_string($connect, $_POST['gender']);
+    $email = pg_escape_string($connect, $_POST['email']);
+    $clinicName = pg_escape_string($connect, $_POST['clinicName']);
+    $password = pg_escape_string($connect, $_POST['password']);
     $password_encrypt = sha1($password);
 
     // validating email if it already exist before inserting into the database
-      $check_email = "SELECT * FROM user WHERE email='$email'";
-      $result = $connect->query($check_email);
-      if($result->num_rows > 0){
+      $check_email = "SELECT * FROM users WHERE email='$email'";
+      $result = pg_query($connect, $check_email);
+      if(pg_num_rows($result) > 0){
         $message = "This email already exists.".$level = 2; //this message is now not showing
       }
       else{
-        $connect->query("INSERT INTO user(role_id, first_name, middle_name, last_name, gender, email, password)
-                         VALUES (2, '$firstName', '$middleName', '$lastName', '$gender', '$email', '$password_encrypt')");
-        $user = mysqli_insert_id($connect);
-        $connect->query("INSERT INTO clinician(user_id, clinic_name)
-                         VALUES ('$user', '$clinicName')");
+        $sqlX = pg_query($connect,"INSERT INTO users(role_id, first_name, middle_name, last_name, gender, email, password)
+                                   VALUES (2, '$firstName', '$middleName', '$lastName', '$gender', '$email', '$password_encrypt') 
+                                   RETURNING user_id");
+        $user = pg_fetch_assoc($sqlX)['user_id'];
+        pg_query($connect,"INSERT INTO clinician(user_id, clinic_name)
+                           VALUES ('$user', '$clinicName')");
 
-        if(!$connect->connect_error){
+        if(!pg_last_error($connect)){
           $message = "You're registered successfully !"; $level = 1;
           header("Refresh:.5; url=./index.php");
         }else{
           $message = "There is an error"; $level = 2;
           // echo 'There is an error'.pg_last_error($connect);
-          $connect->connect_error;
+          pg_last_error($connect);
         }
       }
   }

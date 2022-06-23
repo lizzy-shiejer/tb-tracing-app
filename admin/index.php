@@ -7,26 +7,26 @@
 
 
   $tbContacts = "SELECT COUNT(*) AS a FROM contact";
-  $result = $connect->query($tbContacts);
-  $countContacts = $result->fetch_assoc()['a'];
+  $result = pg_query($connect, $tbContacts);
+  $countContacts = pg_fetch_assoc($result)['a'];
   // for symptomatic contacts
   $symptomaticContacts = "SELECT COUNT(*) AS b
                           FROM symptom";
-  $result = $connect->query($symptomaticContacts);
-  $countSymptoms = $result->fetch_assoc()['b'];
+  $result = pg_query($connect, $symptomaticContacts);
+  $countSymptoms = pg_fetch_assoc($result)['b'];
 
   // for contacts at risk
   $riskContacts = "SELECT COUNT(*) AS c
                    FROM risk_factor";
-  $result = $connect->query($riskContacts);
-  $countRisks = $result->fetch_assoc()['c'];
+  $result = pg_query($connect, $riskContacts);
+  $countRisks = pg_fetch_assoc($result)['c'];
 
   // for traced contacts (this takes data from labtest_status column.... there is an issue here)
   $tracedContacts = "SELECT COUNT(*) AS d 
                      FROM contact 
                      WHERE status != 'pending'";
-  $result = $connect->query($tracedContacts);
-  $countTraced = $result->fetch_assoc()['d'];
+  $result = pg_query($connect, $tracedContacts);
+  $countTraced = pg_fetch_assoc($result)['d'];
 ?>
 
 <!DOCTYPE html>

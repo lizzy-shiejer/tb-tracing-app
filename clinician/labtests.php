@@ -6,11 +6,11 @@
   }
 
 if(isset($_POST['negative'])){
-  $sql = $connect->query("UPDATE contact SET status = 'negative' WHERE contact_id = '".$_POST['id']."'");
+  $sql = pg_query($connect, "UPDATE contact SET status = 'negative' WHERE contact_id = '".$_POST['id']."'");
 }
 
 if(isset($_POST['positive'])){
-  $sql = $connect->query("UPDATE contact SET status = 'positive' WHERE contact_id = '".$_POST['id']."'");
+  $sql = pg_query($connect, "UPDATE contact SET status = 'positive' WHERE contact_id = '".$_POST['id']."'");
 }
 
 ?>
@@ -67,18 +67,18 @@ if(isset($_POST['positive'])){
                     </thead>
                     <tbody>
                       <?php
-                        $labtestResult = "SELECT contact_id as id, user.first_name, user.middle_name, user.last_name, user.gender, age, contact.status   
-                                          FROM user
+                        $labtestResult = "SELECT contact_id as id, users.first_name, users.middle_name, users.last_name, users.gender, age, contact.status   
+                                          FROM users
                                           INNER JOIN contact 
-                                          ON user.user_id=contact.user_id
-                                          WHERE status = 'pending'";
-                        $result = $connect->query($labtestResult);
-                        if($result->num_rows == 0){
+                                          ON users.user_id=contact.user_id
+                                          WHERE status = 'Pending'";
+                        $result = pg_query($connect, $labtestResult);
+                        if(pg_num_rows($result) == 0){
                           echo "<tr><td>No contact!</td></tr>";
                         }
                         else{
                           $i = 1;
-                          while($data = $result->fetch_assoc()){
+                          while($data = pg_fetch_assoc($result)){
                       ?>
                           <tr>
                             <td><?= $i; ?></td>
@@ -131,9 +131,9 @@ if(isset($_POST['positive'])){
     <?php include('layouts/footer.php');?>
   <!-- Footer -->
   
-  <script src="../assets/admin/vendor/jquery/jquery.min.js"></script>
+  <script src="../assets/admipg_query/$pg_query.$connect, min.js"></script>
   <script src="../assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="../assets/admipg_query-$connectpg_query.$connect, easing.min.js"></script>
   <script src="../assets/admin/js/ruang-admin.min.js"></script>
 
 </body>

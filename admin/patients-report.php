@@ -61,11 +61,11 @@
                       <?php
                         $patients = "SELECT  first_name, last_name, gender, registry_number, prev_hospt, occupation
                                      FROM patient
-                                     INNER JOIN user
-                                     ON patient.user_id=user.user_id";
-                        $result = $connect->query($patients);
+                                     INNER JOIN users
+                                     ON patient.user_id=users.user_id";
+                        $result = pg_query($connect, $patients);
                         $i = 1;
-                        while($data = $result->fetch_array()){
+                        while($data = pg_fetch_array($result)){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>

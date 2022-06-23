@@ -62,11 +62,11 @@
                                      FROM symptom
                                      INNER JOIN contact
                                      ON symptom.contact_id=contact.contact_id
-                                     INNER JOIN user
-                                     ON contact.user_id=user.user_id";
-                        $result = $connect->query($contacts);
+                                     INNER JOIN users
+                                     ON contact.user_id=users.user_id";
+                        $result = pg_query($connect, $contacts);
                         $i = 1;
-                        while($data = $result->fetch_array()){
+                        while($data = pg_fetch_array($result)){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>

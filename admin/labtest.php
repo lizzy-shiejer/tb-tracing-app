@@ -61,12 +61,12 @@
                       <?php
                         $contacts = "SELECT first_name, middle_name, last_name, gender, age, status 
                                      FROM contact 
-                                     INNER JOIN user 
-                                     ON contact.user_id=user.user_id
+                                     INNER JOIN users 
+                                     ON contact.user_id=users.user_id
                                      WHERE status != 'Pending'";
-                        $result = $connect->query($contacts);
+                        $result = pg_query($connect, $contacts);
                         $i = 1;
-                        while($data = $result->fetch_array()){
+                        while($data = pg_fetch_array($result)){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>

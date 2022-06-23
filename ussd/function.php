@@ -24,8 +24,8 @@
         }
         if(count($data) == 3){
             $code = $data[2];
-            $sqlX = $connect->query("SELECT * FROM patient_info WHERE code = '$code'");
-            if($sqlX->num_rows == 1){
+            $sqlX = pg_query($connect, "SELECT * FROM patient_info WHERE code = '$code'");
+            if(pg_num_rows($sqlX) == 1){
                $text ='Press 1 to proceed';
                session_proceeds($text);
             }
@@ -66,12 +66,14 @@
             $gender = $data[7];
             $age = $data[8];
             
-            $sqlX = $connect->query("SELECT info_id FROM patient_info WHERE code = '$data[2]'");
-            $infoId = mysqli_fetch_array($sqlX)['info_id'];
+            $sqlX = pg_query($connect, "SELECT info_id FROM patient_info WHERE code = '$data[2]'");
+            $infoId = pg_fetch_array($sqlX)['info_id'];
 
-            $connect->query("INSERT INTO user(role_id, first_name, middle_name, last_name, gender) VALUES (4, '$firstName', '$middleName', '$lastName', '$gender')");
-            $userId = mysqli_insert_id($connect);
-            $run = $connect->query("INSERT INTO contact(user_id, info_id, age) VALUES ('$userId', '$infoId', '$age')");
+            $sql = pg_query($connect, "INSERT INTO users(role_id, first_name, middle_name, last_name, gender) 
+                                       VALUES (4, '$firstName', '$middleName', '$lastName', '$gender') RETURNING user_id");
+            $userId = pg_fetch_assoc($sql)['user_id'];
+            $run = pg_query($connect, "INSERT INTO contact(user_id, info_id, age) 
+                                       VALUES ('$userId', '$infoId', '$age')");
             if($run == false){
                 die('error'.$connect);
             }
@@ -102,10 +104,10 @@
             $coughingBlood = $data[5];
             $chestPain = $data[6];
 
-            $sqlX = $connect->query("SELECT contact_id FROM contact");
-            $result = $sqlX->fetch_array()['contact_id'];
-            $connect->query("INSERT INTO symptom(contact_id, coughing_weeks, coughing_blood, chest_pain) 
-                             VALUES('$result', '$coughingWeeks', '$coughingBlood', '$chestPain')");
+            $sqlX = pg_query($connect, "SELECT contact_id FROM contact");
+            $result = pg_fetch_array($sqlX)['contact_id'];
+            pg_query($connect, "INSERT INTO symptom(contact_id, coughing_weeks, coughing_blood, chest_pain) 
+                                VALUES('$result', '$coughingWeeks', '$coughingBlood', '$chestPain')");
             $text = "You have conducted selft screening successfully!";
             session_ends($text);
         }
@@ -131,10 +133,10 @@
             $weekImmune = $data[5];
             $conditionStatus = $data[6];
 
-            $sqlX = $connect->query("SELECT contact_id FROM contact");
-            $result = $sqlX->fetch_array()['contact_id'];
-            $connect->query("INSERT INTO risk_factor(contact_id, sick_person, weak_immune, condition_state)
-                             VALUES('$result', '$tbPerson', '$weekImmune', '$conditionStatus')");
+            $sqlX = pg_query($connect, "SELECT contact_id FROM contact");
+            $result = pg_fetch_array($sqlX)['contact_id'];
+            pg_query($connect, "INSERT INTO risk_factor(contact_id, sick_person, weak_immune, condition_state)
+                                VALUES('$result', '$tbPerson', '$weekImmune', '$conditionStatus')");
             $text = "You have conducted risk assesment successfully!";
             session_ends($text);
         }
@@ -145,12 +147,12 @@
         global $connect;
         if(count($data) == 4){
             $code = $data[2];
-            $sqlX = $connect->query("SELECT contact.status 
-                                     FROM patient_info
-                                     INNER JOIN contact
-                                     ON contact.info_id = patient_info.info_id
-                                     WHERE code = '$code'");
-            $row = $sqlX->fetch_assoc()['status'];
+            $sqlX = pg_query($connect, "SELECT contact.status 
+                                        FROM patient_info
+                                        INNER JOIN contact
+                                         ON contact.info_id = patient_info.info_id
+                                         WHERE code = '$code'");
+            $row = pg_fetch_assoc($sqlX)['status'];
             $text = "Labtest Status:".' '.$row;
             session_ends($text);
         }

@@ -9,41 +9,41 @@
 
   if(isset($_POST['submit']))
   {
-    $registryNumber = mysqli_real_escape_string($connect, $_POST['registryNumber']);
-    $firstName = mysqli_real_escape_string($connect, $_POST['firstName']);
-    $middleName = mysqli_real_escape_string($connect, $_POST['middleName']);
-    $lastName = mysqli_real_escape_string($connect, $_POST['lastName']);
-    $clinicName = mysqli_real_escape_string($connect, $_POST['clinicName']);
-    $interviewDate = mysqli_real_escape_string($connect, $_POST['interviewDate']);
-    $gender = mysqli_real_escape_string($connect, $_POST['gender']);
-    $phone = mysqli_real_escape_string($connect, $_POST['phone']);
-    $occupation = mysqli_real_escape_string($connect, $_POST['occupation']);
+    $registryNumber = pg_escape_string($connect, $_POST['registryNumber']);
+    $firstName = pg_escape_string($connect, $_POST['firstName']);
+    $middleName = pg_escape_string($connect, $_POST['middleName']);
+    $lastName = pg_escape_string($connect, $_POST['lastName']);
+    $clinicName = pg_escape_string($connect, $_POST['clinicName']);
+    $interviewDate = pg_escape_string($connect, $_POST['interviewDate']);
+    $gender = pg_escape_string($connect, $_POST['gender']);
+    $phone = pg_escape_string($connect, $_POST['phone']);
+    $occupation = pg_escape_string($connect, $_POST['occupation']);
     $mobile = array($_POST['mobile']);
     $mbl = implode(',', $mobile);
     $code = rand(1111,9999);
 
     // check if the patient already exists
     $checkPatient = "SELECT * FROM patient WHERE registry_number=$registryNumber";
-    $result = $connect->query($checkPatient);
-    if($result->num_rows > 0){
+    $result = pg_query($connect, $checkPatient);
+    if(pg_num_rows($result) > 0){
       $massage = "Patient already exists.";
     }
     else {
-      $connect->query("INSERT user(role_id, first_name, middle_name, last_name, gender, phone)
-                               VALUES (3, '$firstName', '$middleName', '$lastName', '$gender', '$phone')");
-      $user = mysqli_insert_id($connect);
-      $sql = $connect->query("INSERT INTO patient(user_id, registry_number, prev_hospt, interview_date, occupation)
-                              VALUES ('$user', '$registryNumber', '$clinicName', '$interviewDate', '$occupation')");
-      $patient = mysqli_insert_id($connect);
-      $sqlX = $connect->query("INSERT INTO patient_info(patient_id, code, phone)
-                               VALUES ('$patient', '$code', '$mbl')");
+      $sq = pg_query($connect, "INSERT INTO users(role_id, first_name, middle_name, last_name, gender, phone)
+                                VALUES (3, '$firstName', '$middleName', '$lastName', '$gender', '$phone') RETURNING user_id");
+      $user = pg_fetch_assoc($sq)['user_id'];
+      $sql = pg_query($connect, "INSERT INTO patient(user_id, registry_number, prev_hospt, interview_date, occupation)
+                                 VALUES ('$user', '$registryNumber', '$clinicName', '$interviewDate', '$occupation') RETURNING patient_id");
+      $patient = pg_fetch_assoc($sql)['patient_id'];
+      $sqlX = pg_query($connect, "INSERT INTO patient_info(patient_id, code, phone)
+                                  VALUES ('$patient', '$code', '$mbl')");
       // if($sql == true){
       //   // message inayosema = Patient added successfully;
       // }
       // if(isset($_POST['sendText'])){
-      //   $mobile = mysqli_real_escape_string($connect, $_POST['mobile']);
+      //   $mobile = pg_escape_string($connect, $_POST['mobile']);
       //   $code = rand(1000);
-      //   $connect->query("INSERT INTO patient_info(patient_id, code, phone)
+      //   pg_query($connect, "INSERT INTO patient_info(patient_id, code, phone)
       //                    VALUES ('$patient', '$code', '$mobile')");
       //   header('Location: contact-indexing.php');
       // }
@@ -52,14 +52,14 @@
 
   // if(isset($_POST['sendText']))
   // { 
-  //   $mobile = mysqli_real_escape_string($connect, $_POST['mobile']);
+  //   $mobile = pg_escape_string($connect, $_POST['mobile']);
 
   //   // $patient = mysqli_insert_id($connect);
   //   $code = rand();
 
   //   $addContact = "INSERT INTO patient_info(patient_id, code, phone)
   //                  VALUES('$patient', '$code', '$mobile')";
-  //   $result = $connect->query($addContact);
+  //   $result = pg_query($connect, $addContact);
   //   if($result > 0){
   //   header('Location: contact-indexing.php');
   //   }
@@ -229,12 +229,12 @@
     </div>
     </div>
     <!-- container-scroller -->
-    <script src="../assets/admin/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/admipg_query/$pg_query.$connect, min.js"></script>
     <script src="../assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../assets/admipg_query-$connectpg_query.$connect, easing.min.js"></script>
     <script src="../assets/admin/js/ruang-admin.min.js"></script>
     <!-- Page level plugins -->
-    <script src="../assets/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/admin/vendor/dapg_query.$connect, dataTables.min.js"></script>
     <script src="../assets/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <!-- Page level custom scripts -->
   </body>

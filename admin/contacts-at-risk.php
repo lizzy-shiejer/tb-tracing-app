@@ -66,11 +66,11 @@
                                      FROM risk_factor
                                      INNER JOIN contact
                                      ON risk_factor.contact_id=contact.contact_id
-                                     INNER JOIN user
-                                     ON user.user_id=contact.user_id";
-                        $result = $connect->query($contacts);
+                                     INNER JOIN users
+                                     ON users.user_id=contact.user_id";
+                        $result = pg_query($connect, $contacts);
                         $i = 1;
-                        while($data = $result->fetch_array()){
+                        while($data = pg_fetch_array($result)){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>

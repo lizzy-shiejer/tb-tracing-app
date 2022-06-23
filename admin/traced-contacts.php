@@ -58,14 +58,14 @@
                     </thead>
                     <tbody>
                       <?php
-                        $contacts = "SELECT user.first_name, user.middle_name, user.last_name, user.gender, contact.age
+                        $contacts = "SELECT users.first_name, users.middle_name, users.last_name, users.gender, contact.age
                                      FROM  contact
-                                     INNER JOIN user
-                                     ON contact.user_id = user.user_id
-                                     WHERE status != 'pending'";
-                        $result = $connect->query($contacts);
+                                     INNER JOIN users
+                                     ON contact.user_id = users.user_id
+                                     WHERE status != 'Pending'";
+                        $result = pg_query($connect, $contacts);
                         $i = 1;
-                        while($data = $result->fetch_array()){
+                        while($data = pg_fetch_array($result)){
                       ?>
                         <tr>
                           <td><?= $i; ?></td>
