@@ -84,12 +84,23 @@
         }
     }
 
+    // function check()
+    // {
+    //     global $connect;
+    //     $sqlX = pg_query($connect, "SELECT * FROM contact");
+    //     if(pg_num_rows($sqlX) == true){
+    //         $text = "This enrty code has already been screening or risk assesment";
+    //         session_ends($text);
+    //     }
+    // }
+
     function screening($data)
     {
         global $connect;
         if(count($data) == 4){
+            // check();
             $text =  "Have you been coughing for two weeks and more?\n1. YES\n2. NO";
-            session_proceeds($text);
+            session_proceeds($text);                     
         }
         if(count($data) == 5){
             $text = "Have you been coughing up blood or heavy mucus?\n1. YES\n2. NO";
